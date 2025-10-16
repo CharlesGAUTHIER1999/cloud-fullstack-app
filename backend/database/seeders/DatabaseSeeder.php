@@ -21,5 +21,9 @@ class DatabaseSeeder extends Seeder
         User::factory()->count(10)->create([]);
         // Generate 50 fake posts using the Post factory
         Post::factory()->count(50)->create();
+
+        $this->call([
+            UpdatePostAuthorsSeeder::class,
+        ]);
     }
 }
