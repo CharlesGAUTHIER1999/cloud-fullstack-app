@@ -17,9 +17,7 @@ export default function PostsList() {
         (async () => {
             setLoading(true);
             try {
-                const API_URL = window.location.hostname === "localhost"
-                    ? import.meta.env.VITE_API_URL_LOCAL
-                    : import.meta.env.VITE_API_URL_DOCKER;
+                const API_URL = import.meta.env.VITE_API_URL;
 
                 const response = await fetch(
                     `${API_URL}/posts?page=${page}&per_page=${perPage}`,

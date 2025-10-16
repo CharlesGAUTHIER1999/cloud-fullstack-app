@@ -23,9 +23,7 @@ export default function AdminDashboard() {
                 )
             ).toString();
 
-            const API_URL = window.location.hostname === "localhost"
-                ? import.meta.env.VITE_API_URL_LOCAL
-                : import.meta.env.VITE_API_URL_DOCKER;
+            const API_URL = import.meta.env.VITE_API_URL;
 
             const response = await fetch(
                 `${API_URL}/posts?${query}`,
@@ -73,9 +71,7 @@ export default function AdminDashboard() {
         if (!window.confirm("Delete this post ?")) return;
 
         try {
-            const API_URL = window.location.hostname === "localhost"
-                ? import.meta.env.VITE_API_URL_LOCAL
-                : import.meta.env.VITE_API_URL_DOCKER;
+            const API_URL = import.meta.env.VITE_API_URL;
 
             const res = await fetch(`${API_URL}/posts/${id}`, {
                 method: "DELETE",

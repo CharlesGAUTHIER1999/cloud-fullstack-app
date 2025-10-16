@@ -15,9 +15,8 @@ export default function DetailPost() {
         const controller = new AbortController();
         (async() => {
             try {
-                const API_URL = window.location.hostname === "localhost"
-                    ? import.meta.env.VITE_API_URL_LOCAL
-                    : import.meta.env.VITE_API_URL_DOCKER;
+                const API_URL = import.meta.env.VITE_API_URL;
+
                 const response = await fetch(
                     `${API_URL}/posts/${slug}`,
                     { signal: controller.signal}
@@ -43,9 +42,7 @@ export default function DetailPost() {
         if (!window.confirm("Are you sure you want to delete this post?")) return;
 
         try {
-            const API_URL = window.location.hostname === "localhost"
-                ? import.meta.env.VITE_API_URL_LOCAL
-                : import.meta.env.VITE_API_URL_DOCKER;
+            const API_URL = import.meta.env.VITE_API_URL;
 
             const response = await fetch(
                 `${API_URL}/posts/${slug}`,
