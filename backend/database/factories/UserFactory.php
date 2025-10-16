@@ -3,27 +3,36 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Faker\Factory as FakerFactory; // ✅ importe Faker manuellement
 
 class UserFactory extends Factory
 {
     protected $model = User::class;
+
     protected static ?string $password;
+    protected Generator $customFaker;
+
+    public function __construct(...$args)
+    {
+        parent::__construct(...$args);
+        $this->customFaker = FakerFactory::create('fr_FR');
+    }
 
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
+            'name' => $this->customFaker->name(),
+            'email' => $this->customFaker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
     }
 
-    // State for users with unverified emails
     public function unverified(): static
     {
         return $this->state(fn(array $attributes) => [
@@ -31,4 +40,3 @@ class UserFactory extends Factory
         ]);
     }
 }
-
