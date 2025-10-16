@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  # 🐘 Base de données MySQL
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: appcloud1
+      MYSQL_USER: ps_charlesgauthier
+      MYSQL_PASSWORD: Bordeaux2025@
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # ⚙️ Backend Laravel
+  backend:
+    build:
+      context: ./backend
+    container_name: laravel_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www/html
+    working_dir: /var/www/html
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    depends_on:
+      - db
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: appcloud1
+      DB_USERNAME: ps_charlesgauthier
+      DB_PASSWORD: Bordeaux2025@
+
+  # ⚛️ Frontend React
+  frontend:
+    build:
+      context: ./frontend
+    container_name: react_app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
+    command: npm run dev
+    environment:
+      - CHOKIDAR_USE POLLING=true
+
+volumes:
+  db_data:
