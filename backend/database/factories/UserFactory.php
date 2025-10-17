@@ -7,7 +7,7 @@ use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Faker\Factory as FakerFactory; // ✅ importe Faker manuellement
+use Faker\Factory as FakerFactory;
 
 class UserFactory extends Factory
 {
