@@ -4,8 +4,12 @@ import { Link } from "react-router-dom";
 export default function Home() {
     const [role, setRole] = useState(sessionStorage.getItem("role") || "guest");
     useEffect(() => {
-        sessionStorage.setItem("role", role);
-    }, [role]);
+        const syncRole = (e) => {
+            if (e.key === "role") setRole(e.newValue || "guest");
+        };
+        window.addEventListener("storage", syncRole);
+        return () => window.removeEventListener("storage", syncRole);
+    }, []);
 
     const handleRoleChange = (newRole) => {
         setRole(newRole);

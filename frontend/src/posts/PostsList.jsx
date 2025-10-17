@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function PostsList() {
+export function PostsList() {
     const [posts, setPosts] = useState([]);
     const [meta, setMeta] = useState({});
     const [loading, setLoading] = useState(true);
@@ -18,19 +18,23 @@ export default function PostsList() {
             setLoading(true);
             try {
                 const API_URL = import.meta.env.VITE_API_URL;
+                console.log("🌍 Fetching from API:", `${API_URL}/posts?page=${page}&per_page=${perPage}`);
 
                 const response = await fetch(
                     `${API_URL}/posts?page=${page}&per_page=${perPage}`,
-                    { signal: controller.signal }
+                    {signal: controller.signal}
                 );
 
-                if (!response.ok) throw new Error("Unable to fetch posts");
+                if (!response.ok) throw new Error(`Unable to fetch posts (status ${response.status})`);
 
                 const data = await response.json();
+                console.log("✅ API working, received:");
+
                 setPosts(data.data || []);
                 setMeta(data.meta || {});
             } catch (err) {
                 if (err.name !== "AbortError") {
+                    console.error("❌ API error:", err);
                     setError(err.message);
                 }
             } finally {

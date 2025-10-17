@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout.jsx";
 import Home from "./Home.jsx";
 import AdminDashboard from "./admin/AdminDashboard.jsx";
-import PostsList from "./posts/PostsList.jsx";
+import {PostsList} from "./posts/PostsList.jsx";
 import CreatePost from "./posts/CreatePost.jsx";
 import EditPost from "./posts/EditPost.jsx";
 import DetailPost from "./posts/DetailPosts.jsx";

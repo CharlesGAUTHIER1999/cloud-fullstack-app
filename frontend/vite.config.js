@@ -6,6 +6,7 @@ export default ({ mode }) => {
 
     return defineConfig({
         plugins: [react()],
+        base: '/',
         server: {
             host: true,
             port: 5173,
@@ -14,8 +15,7 @@ export default ({ mode }) => {
             },
         },
         define: {
-            'import.meta.env': env,
+            __APP_ENV__: env.APP_ENV,
         },
     })
 }
-
