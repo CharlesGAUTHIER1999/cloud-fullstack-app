@@ -49,20 +49,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        working-directory: ./frontend
-        run: npm ci
+        run: |
+          cd frontend
+          npm ci
 
       - name: Build project
-        working-directory: ./frontend
-        run: npm run build
+        run: |
+          cd frontend
+          npm run build
 
       - name: Deploy to Vercel
-        working-directory: ./frontend
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npx vercel --token $VERCEL_TOKEN --prod \
-            --confirm --scope $VERCEL_ORG_ID \
+          cd frontend
+          npx vercel --token $VERCEL_TOKEN --prod --yes \
+            --scope $VERCEL_ORG_ID \
             --name cloud-fullstack-app
