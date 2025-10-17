@@ -13,25 +13,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ✅ Configuration propre de Google Cloud
+      - name: Decode and setup GCP credentials
+        run: |
+          echo "${{ secrets.GCP_SA_KEY_BASE64 }}" | base64 --decode > ${HOME}/gcp-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
+          gcloud config set project ynovtestv2
+          gcloud auth list
+
       - name: Setup Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ynovtestv2
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          credentials_json: ${{ secrets.GCP_SA_KEY_BASE64 }}
 
-      - name: Verify GCP authentication
-        run: gcloud auth list
-
-      - name: Activate service account
-        run: |
-          echo "${{ secrets.GCP_SA_KEY }}" > ${HOME}/gcp-key.json
-          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
-          gcloud config set account $(jq -r '.client_email' ${HOME}/gcp-key.json)
-          gcloud config set project ynovtestv2
-          gcloud auth list
-
-      - name: Configure Docker authentication
+      - name: Configure Docker auth
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
 
       - name: Deploy Laravel API to Cloud Run
