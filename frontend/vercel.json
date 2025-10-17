@@ -1,7 +1,10 @@
 {
   "version": 2,
   "builds": [
-    { "src": "package.json", "use": "@vercel/static-build" }
+    {
+      "src": "index.html",
+      "use": "@vercel/static-build"
+    }
   ],
   "routes": [
     {
@@ -9,7 +12,10 @@
       "dest": "https://appcloud-backend-586456159315.europe-west1.run.app/api/$1"
     },
     {
-      "src": "/(.*)",
+      "handle": "filesystem"
+    },
+    {
+      "src": "/.*",
       "dest": "/index.html"
     }
   ],
