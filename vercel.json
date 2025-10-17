@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.html",
+      "src": "frontend/package.json",
       "use": "@vercel/static-build"
     }
   ],
@@ -16,10 +16,11 @@
     },
     {
       "src": "/.*",
-      "dest": "/index.html"
+      "dest": "/frontend/dist/index.html"
     }
   ],
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist"
 }
+
 
