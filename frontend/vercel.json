@@ -1,8 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.html", "use": "@vercel/static-build", "config": { "distDir": "dist" } }
-  ],
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "dist",
+  "framework": "vite",
   "routes": [
     {
       "src": "/api/(.*)",
@@ -12,9 +13,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "outputDirectory": "dist",
-  "framework": "vite"
+  ]
 }
