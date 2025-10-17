@@ -15,8 +15,8 @@ jobs:
 
       - name: Decode and setup GCP credentials
         run: |
+          gcloud auth login
           gcloud config set project ynovtestv2
-          gcloud auth list
 
       - name: Setup Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
