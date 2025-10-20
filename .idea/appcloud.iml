@@ -120,6 +120,12 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/jean85/pretty-package-versions" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/nyholm/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/sentry/sentry" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/sentry/sentry-laravel" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/options-resolver" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/psr-http-message-bridge" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -130,6 +130,12 @@
       <path value="$PROJECT_DIR$/backend/vendor/graham-campbell/result-type" />
       <path value="$PROJECT_DIR$/backend/vendor/dragonmantank/cron-expression" />
       <path value="$PROJECT_DIR$/backend/vendor/composer" />
+      <path value="$PROJECT_DIR$/backend/vendor/jean85/pretty-package-versions" />
+      <path value="$PROJECT_DIR$/backend/vendor/symfony/options-resolver" />
+      <path value="$PROJECT_DIR$/backend/vendor/symfony/psr-http-message-bridge" />
+      <path value="$PROJECT_DIR$/backend/vendor/nyholm/psr7" />
+      <path value="$PROJECT_DIR$/backend/vendor/sentry/sentry" />
+      <path value="$PROJECT_DIR$/backend/vendor/sentry/sentry-laravel" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3" />
