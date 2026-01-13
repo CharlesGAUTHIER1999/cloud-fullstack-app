@@ -2,10 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', static function () {
+Route::get('/', function () {
     return response()->json([
         'message' => 'Welcome to AppCloud API 🚀',
-        'frontend' => 'http://localhost:5173',
+        'frontend' => 'https://cloud-fullstack-app.vercel.app',
     ]);
 });
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok'], 200);
+});
