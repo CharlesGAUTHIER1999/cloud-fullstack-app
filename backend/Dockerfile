@@ -20,6 +20,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 FROM php:8.3-cli
 
 # Dépendances système + extensions PHP (MySQL + PostgreSQL)
+# ✅ Fix Cloud Build : mbstring nécessite Oniguruma => libonig-dev
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
@@ -29,6 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
         pdo \

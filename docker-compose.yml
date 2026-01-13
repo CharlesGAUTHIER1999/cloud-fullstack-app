@@ -1,41 +1,52 @@
 version: "3.8"
 
 services:
-  # 🐘 Base de données MySQL
+  # 🐘 Base de données locale (PostgreSQL au lieu de MySQL)
   db:
-    image: mysql:8.0
-    container_name: mysql_db
+    image: postgres:15
+    container_name: postgres_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: appcloud1
-      MYSQL_USER: ps_charlesgauthier
-      MYSQL_PASSWORD: Bordeaux2025@
+      POSTGRES_DB: appcloud_local
+      POSTGRES_USER: ps_charlesgauthier
+      POSTGRES_PASSWORD: Bordeaux2025@
     ports:
-      - "3307:3306"
+      - "5433:5432"
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ps_charlesgauthier"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ⚙️ Backend Laravel
   backend:
     build:
       context: ./backend
     container_name: laravel_app
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/var/www/html
     working_dir: /var/www/html
     command: php artisan serve --host=0.0.0.0 --port=8000
-    depends_on:
-      - db
     environment:
-      DB_CONNECTION: mysql
+      APP_ENV: local
+      APP_DEBUG: true
+      APP_KEY: base64:PLACE_YOUR_LOCAL_KEY_HERE
+      DB_CONNECTION: pgsql
       DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: appcloud1
+      DB_PORT: 5432
+      DB_DATABASE: appcloud_local
       DB_USERNAME: ps_charlesgauthier
       DB_PASSWORD: Bordeaux2025@
+      PGSSLMODE: disable
+    # Pour éviter les soucis de droits sur Windows
+    user: "0:0"
 
   # ⚛️ Frontend React
   frontend:
@@ -49,7 +60,10 @@ services:
     working_dir: /app
     command: npm run dev
     environment:
-      - CHOKIDAR_USE POLLING=true
+      - CHOKIDAR_USE_POLLING=true
+      - VITE_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
 
 volumes:
   db_data:

@@ -13,27 +13,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Decode and setup GCP credentials
-        run: |
-          echo "${{ secrets.GCP_SA_KEY_BASE64 }}" | base64 --decode > ${HOME}/gcp-key.json
-          gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
-          gcloud config set project ynovtestv2
-          gcloud auth list
-
+      # 1️⃣ Setup Google Cloud SDK
       - name: Setup Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ynovtestv2
-          credentials_json: ${{ secrets.GCP_SA_KEY_BASE64 }}
+          service_account_key: ${{ secrets.GCP_SA_KEY_BASE64 }}
 
+      # 2️⃣ Configure Docker auth for Artifact Registry
       - name: Configure Docker auth
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
 
-      - name: Deploy Laravel API to Cloud Run
+      # 3️⃣ Build & Push Docker image
+      - name: Build and Push Docker image
         run: |
           cd backend
+          docker build -t europe-west1-docker.pkg.dev/ynovtestv2/appcloud-repo/backend:latest .
+          docker push europe-west1-docker.pkg.dev/ynovtestv2/appcloud-repo/backend:latest
+
+      # 4️⃣ Deploy to Cloud Run
+      - name: Deploy Laravel API to Cloud Run
+        run: |
           gcloud run deploy appcloud-backend \
-            --source . \
+            --image europe-west1-docker.pkg.dev/ynovtestv2/appcloud-repo/backend:latest \
             --region europe-west1 \
             --platform managed \
             --allow-unauthenticated \
