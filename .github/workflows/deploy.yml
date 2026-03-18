@@ -33,7 +33,8 @@ jobs:
       - name: Prepare Laravel environment for tests
         run: |
           cd backend
-          cp .env.example .env
+          printf "APP_NAME=AppCloud\nAPP_ENV=testing\nAPP_KEY=\nAPP_DEBUG=true\nAPP_URL=http://localhost\nLOG_CHANNEL=stack\nLOG_LEVEL=debug\nDB_CONNECTION=sqlite\nDB_DATABASE=database/database.sqlite\nCACHE_STORE=file\nQUEUE_CONNECTION=sync\nSESSION_DRIVER=file\nSESSION_LIFETIME=120\n" > .env
+          touch database/database.sqlite
           php artisan key:generate
         env:
           APP_ENV: testing
