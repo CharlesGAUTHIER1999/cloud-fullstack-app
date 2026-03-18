@@ -69,4 +69,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
 
 USER www-data
 
-CMD ["sh", "-c", "php -S 0.0.0.0:${PORT} -t public public/index.php"]
+CMD ["sh", "-c", "php artisan migrate --force && php artisan db:seed --force || true && php -S 0.0.0.0:${PORT} -t public public/index.php"]
