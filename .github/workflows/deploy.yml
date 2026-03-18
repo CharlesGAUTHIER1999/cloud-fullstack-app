@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy-backend:
-    name: Deploy Backend (Laravel) to Cloud Run
+    name: Deploy Backend to Cloud Run
     runs-on: ubuntu-latest
 
     permissions:
@@ -22,13 +22,13 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: mbstring, pdo, pdo_pgsql, zip, gd
+          extensions: mbstring, pdo, pdo_mysql, zip, gd
           coverage: none
 
       - name: Install backend dependencies
         run: |
           cd backend
-          composer install --no-interaction
+          composer install --no-interaction --prefer-dist
 
       - name: Prepare Laravel environment for tests
         run: |
@@ -56,12 +56,12 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
 
-      - name: Build and Push Docker image
+      - name: Build and push backend image
         run: |
           docker build -t europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloudgauthier-repo/backend:latest ./backend
           docker push europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloudgauthier-repo/backend:latest
 
-      - name: Deploy Laravel API to Cloud Run
+      - name: Deploy backend to Cloud Run
         run: |
           gcloud run deploy appcloud-backend \
             --image europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloudgauthier-repo/backend:latest \
@@ -80,16 +80,16 @@ jobs:
             --set-env-vars APP_URL=${{ secrets.APP_URL }} \
             --set-env-vars LOG_CHANNEL=stack \
             --set-env-vars LOG_LEVEL=info \
+            --set-env-vars APP_KEY=${{ secrets.APP_KEY }} \
             --set-env-vars DB_CONNECTION=mysql \
-            --set-env-vars DB_HOST=127.0.0.1 \
+            --set-env-vars DB_HOST=localhost \
             --set-env-vars DB_SOCKET=/cloudsql/projetdemocloudgauthier:europe-west1:appcloudgauthier \
             --set-env-vars DB_PORT=3306 \
             --set-env-vars DB_DATABASE=${{ secrets.DB_DATABASE }} \
             --set-env-vars DB_USERNAME=${{ secrets.DB_USERNAME }} \
             --set-env-vars DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --set-env-vars CACHE_STORE=file \
-            --set-env-vars QUEUE_CONNECTION=sync \
             --set-env-vars SESSION_DRIVER=file \
             --set-env-vars SESSION_LIFETIME=120 \
-            --set-env-vars APP_KEY=${{ secrets.APP_KEY }} \
+            --set-env-vars QUEUE_CONNECTION=sync \
             --project ${{ secrets.GCP_PROJECT_ID }}
