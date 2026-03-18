@@ -58,8 +58,8 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloud-repo/backend:latest ./backend
-          docker push europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloud-repo/backend:latest
+          docker build -t europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloudgauthier-repo/backend:latest ./backend
+          docker push europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloudgauthier-repo/backend:latest
 
       - name: Deploy Laravel API to Cloud Run
         run: |
