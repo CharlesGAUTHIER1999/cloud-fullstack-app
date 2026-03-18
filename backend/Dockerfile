@@ -55,8 +55,7 @@ WORKDIR /var/www/html
 COPY --from=build /app ./
 
 RUN php artisan config:clear \
- && php artisan route:clear \
- && php artisan config:cache
+ && php artisan route:clear
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
@@ -69,4 +68,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
 
 USER www-data
 
-CMD ["sh", "-c", "sleep 5 && php artisan migrate --force && php artisan db:seed --force && php -S 0.0.0.0:${PORT} -t public public/index.php"]
+CMD ["sh", "-c", "php -S 0.0.0.0:${PORT} -t public public/index.php"]
