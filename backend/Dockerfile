@@ -54,6 +54,11 @@ WORKDIR /var/www/html
 
 COPY --from=build /app ./
 
+RUN php artisan config:clear \
+ && php artisan cache:clear \
+ && php artisan route:clear \
+ && php artisan config:cache
+
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
