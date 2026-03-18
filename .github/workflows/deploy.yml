@@ -73,15 +73,17 @@ jobs:
             --cpu 1 \
             --min-instances 0 \
             --max-instances 2 \
+            --add-cloudsql-instances projetdemocloudgauthier:europe-west1:appcloudgauthier \
             --set-env-vars APP_NAME=AppCloud \
             --set-env-vars APP_ENV=production \
             --set-env-vars APP_DEBUG=false \
             --set-env-vars APP_URL=${{ secrets.APP_URL }} \
             --set-env-vars LOG_CHANNEL=stack \
             --set-env-vars LOG_LEVEL=info \
-            --set-env-vars DB_CONNECTION=pgsql \
-            --set-env-vars DB_HOST=${{ secrets.DB_HOST }} \
-            --set-env-vars DB_PORT=${{ secrets.DB_PORT }} \
+            --set-env-vars DB_CONNECTION=mysql \
+            --set-env-vars DB_HOST=127.0.0.1 \
+            --set-env-vars DB_SOCKET=/cloudsql/projetdemocloudgauthier:europe-west1:appcloudgauthier \
+            --set-env-vars DB_PORT=3306 \
             --set-env-vars DB_DATABASE=${{ secrets.DB_DATABASE }} \
             --set-env-vars DB_USERNAME=${{ secrets.DB_USERNAME }} \
             --set-env-vars DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
