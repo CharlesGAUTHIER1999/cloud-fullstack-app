@@ -1,5 +1,4 @@
 name: Deploy AppCloud
-
 on:
   push:
     branches:
