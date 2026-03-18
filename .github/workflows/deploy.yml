@@ -1,42 +1,93 @@
-name: Deploy Appcloud
+name: Deploy AppCloud
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
 
 jobs:
   deploy-backend:
     name: Deploy Backend (Laravel) to Cloud Run
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1️⃣ Authentification Google Cloud
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, pdo, pdo_pgsql, zip, gd
+          coverage: none
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          composer install --no-interaction
+
+      - name: Prepare Laravel environment for tests
+        run: |
+          cd backend
+          cp .env.example .env
+          php artisan key:generate
+        env:
+          APP_ENV: testing
+
+      - name: Run Laravel tests
+        run: |
+          cd backend
+          php artisan test
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
       - name: Setup Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ynovtestv2
-          service_account_key: ${{ secrets.GCP_SA_KEY_BASE64 }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      # 2️⃣ Auth Docker vers Artifact Registry
-      - name: Authenticate Docker to Artifact Registry
+      - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
 
-      # 3️⃣ Build + Push Docker image
       - name: Build and Push Docker image
         run: |
-          cd backend
-          docker build -t europe-west1-docker.pkg.dev/ynovtestv2/appcloud-repo/backend:latest .
-          docker push europe-west1-docker.pkg.dev/ynovtestv2/appcloud-repo/backend:latest
+          docker build -t europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloud-repo/backend:latest ./backend
+          docker push europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloud-repo/backend:latest
 
-      # 4️⃣ Deploy to Cloud Run
       - name: Deploy Laravel API to Cloud Run
         run: |
           gcloud run deploy appcloud-backend \
-            --image europe-west1-docker.pkg.dev/ynovtestv2/appcloud-repo/backend:latest \
+            --image europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloud-repo/backend:latest \
             --region europe-west1 \
             --platform managed \
             --allow-unauthenticated \
-            --project ynovtestv2
+            --port 8080 \
+            --memory 512Mi \
+            --cpu 1 \
+            --min-instances 0 \
+            --max-instances 2 \
+            --set-env-vars APP_NAME=AppCloud \
+            --set-env-vars APP_ENV=production \
+            --set-env-vars APP_DEBUG=false \
+            --set-env-vars APP_URL=${{ secrets.APP_URL }} \
+            --set-env-vars LOG_CHANNEL=stack \
+            --set-env-vars LOG_LEVEL=info \
+            --set-env-vars DB_CONNECTION=pgsql \
+            --set-env-vars DB_HOST=${{ secrets.DB_HOST }} \
+            --set-env-vars DB_PORT=${{ secrets.DB_PORT }} \
+            --set-env-vars DB_DATABASE=${{ secrets.DB_DATABASE }} \
+            --set-env-vars DB_USERNAME=${{ secrets.DB_USERNAME }} \
+            --set-env-vars DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            --set-env-vars CACHE_STORE=file \
+            --set-env-vars QUEUE_CONNECTION=sync \
+            --set-env-vars SESSION_DRIVER=file \
+            --set-env-vars SESSION_LIFETIME=120 \
+            --set-env-vars APP_KEY=${{ secrets.APP_KEY }} \
+            --project ${{ secrets.GCP_PROJECT_ID }}
