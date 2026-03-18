@@ -1,4 +1,5 @@
 name: Deploy AppCloud
+
 on:
   push:
     branches:
@@ -63,7 +64,7 @@ jobs:
       - name: Deploy Laravel API to Cloud Run
         run: |
           gcloud run deploy appcloud-backend \
-            --image europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloud-repo/backend:latest \
+            --image europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/appcloudgauthier-repo/backend:latest \
             --region europe-west1 \
             --platform managed \
             --allow-unauthenticated \
