@@ -1,41 +1,50 @@
 # =========================
-# Étape 1 : Build (Composer)
+# Étape 1 : Build Composer
 # =========================
 FROM composer:2.7 AS build
+
 WORKDIR /app
 
-# Copier le projet
+# Copier seulement les fichiers Composer d'abord
+COPY composer.json composer.lock ./
+
+# Installer les dépendances prod sans scripts
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-scripts
+
+# Copier ensuite le reste du projet
 COPY . .
 
-# Ne jamais embarquer .env dans l'image (Cloud Run gère les env vars)
+# Ne jamais embarquer .env
 RUN rm -f .env
 
-# Installer les dépendances PHP sans les dev
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Regénérer l'autoload proprement
+RUN composer dump-autoload --optimize --no-dev
 
 
 # =========================
-# Étape 2 : Runtime (PHP CLI)
+# Étape 2 : Runtime PHP
 # =========================
 FROM php:8.3-cli
 
-# Dépendances système + extensions PHP (MySQL + PostgreSQL)
-# ✅ Fix Cloud Build : mbstring nécessite Oniguruma => libonig-dev
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
     git \
     libzip-dev \
-    libpq-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     libonig-dev \
+    default-mysql-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
         pdo \
         pdo_mysql \
-        pdo_pgsql \
         mbstring \
         zip \
         gd \
@@ -43,23 +52,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /var/www/html
 
-# Copier l'app buildée (code + vendor)
 COPY --from=build /app ./
 
-# Permissions Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Cloud Run écoute sur 8080
 ENV PORT=8080
 EXPOSE 8080
 
-# Healthcheck (suppose que /health existe côté routes)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
   CMD curl --fail http://localhost:8080/health || exit 1
 
-# Optionnel mais propre : exécuter en non-root
 USER www-data
 
-# Lancement via serveur PHP (plus simple que "artisan serve")
 CMD ["sh", "-c", "php -S 0.0.0.0:${PORT} -t public public/index.php"]
