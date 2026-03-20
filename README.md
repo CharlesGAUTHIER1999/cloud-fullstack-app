@@ -2,6 +2,9 @@
 
 Application web full-stack cloud-native permettant de créer et consulter des posts (articles, contenus), déployée sur Google Cloud avec une architecture scalable et une pipeline CI/CD automatisée.
 
+URL Backend : https://appcloud-backend-188500171231.europe-west1.run.app
+URL Frontend : https://cloud-fullstack-app.vercel.app/
+
 ---
 
 ## 📌 Objectifs du projet
