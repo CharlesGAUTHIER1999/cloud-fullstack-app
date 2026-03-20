@@ -19,7 +19,7 @@ export default function AppLayout() {
                     <div className="d-flex align-items-center gap-2">
                         {/* Logo */}
                         <Link className="navbar-brand fw-bold me-3" to="/">
-                            🚀 ApptCloud
+                            🚀 AppCloud
                         </Link>
 
                         {/* Posts Dropdown */}
