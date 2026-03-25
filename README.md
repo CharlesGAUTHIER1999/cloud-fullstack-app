@@ -90,6 +90,9 @@ Les variables sensibles sont stockées dans :
 - GitHub Secrets
 - Cloud Run Environment Variables
 
+  Dans Vercel : VITE_API_URL : https://appcloud-backend-188500171231.europe-west1.run.app/api
+  
+
 Exemples :
 APP_ENV=production
 APP_DEBUG=false
